@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Email</title>
+    <style>
+        body { font-family: system-ui, sans-serif; text-align: center; padding-top: 50px; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h2>Email Verification</h2>
+    <p id="status">Verifying your email...</p>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const verifyUrl = urlParams.get('verify_url');
+            const statusEl = document.getElementById('status');
+
+            if (!verifyUrl) {
+                statusEl.textContent = "Invalid verification link.";
+                statusEl.className = "error";
+                return;
+            }
+
+            try {
+                // Call the backend API securely
+                const response = await fetch(verifyUrl, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+                
+                const data = await response.json();
+
+                if (response.ok) {
+                    statusEl.textContent = data.message || "Your email has been verified! You can now return to the app.";
+                    statusEl.className = "success";
+                } else {
+                    statusEl.textContent = data.message || "Failed to verify email.";
+                    statusEl.className = "error";
+                }
+            } catch (error) {
+                statusEl.textContent = "A network error occurred.";
+                statusEl.className = "error";
+            }
+        });
+    </script>
+</body>
+</html>
